@@ -7,34 +7,34 @@
 <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  if (!window.Eitaa || !Eitaa.WebApp) return;
+  if (!window.Eitaa?.WebApp) return;
 
   const App = Eitaa.WebApp;
   App.ready();
   App.expand();
   App.BackButton.show();
 
-  // آیا الان داخل صفحه داخلی هستیم؟
-  let isInnerPage = false;
+  let isInner = false;
 
   App.BackButton.onClick(() => {
-    if (isInnerPage) {
-      // برگرد به صفحه اصلی
+    if (isInner) {
+      // برگشت داخلی
       showHome();
-      isInnerPage = false;
-    } else {
-      // فقط اینجا بسته میشه
-      App.close();
+      isInner = false;
+
+      // ⛔️ خیلی مهم: جلوگیری از بستن WebView
+      return false;
     }
+
+    // فقط اینجا اجازه خروج
+    App.close();
   });
 
-  // رفتن به صفحه داخلی
-  window.openInnerPage = () => {
+  window.goInner = () => {
+    isInner = true;
     showDetail();
-    isInnerPage = true;
   };
 
-  // نمونه رندر
   function showHome() {
     document.getElementById("home").style.display = "block";
     document.getElementById("detail").style.display = "none";
