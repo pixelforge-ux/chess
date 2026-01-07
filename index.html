@@ -7,35 +7,36 @@
 <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  if (window.Eitaa && Eitaa.WebApp) {
-    Eitaa.WebApp.ready();
+  if (!window.Eitaa?.WebApp) return;
 
-    Eitaa.WebApp.expand?.();
-    Eitaa.WebApp.setHeaderColor?.('#0a61db');
-    Eitaa.WebApp.enableClosingConfirmation?.();
-    Eitaa.WebApp.disableVerticalSwipes?.();
+  const App = Eitaa.WebApp;
+  App.ready();
+  App.expand?.();
+  App.BackButton.show();
 
-    // فعال‌سازی دکمه بک
-    Eitaa.WebApp.BackButton.show();
+  let pageDepth = 0; // 0 = صفحه اصلی
 
-    // state ریشه
-    history.replaceState({ root: true }, "", location.href);
+  // state اولیه
+  history.replaceState({ depth: 0 }, "");
 
-    Eitaa.WebApp.BackButton.onClick(() => {
-      const state = history.state;
+  App.BackButton.onClick(() => {
+    if (pageDepth > 0) {
+      history.back();
+    } else {
+      App.close();
+    }
+  });
 
-      if (state && state.root === false) {
-        history.back();
-      } else {
-        Eitaa.WebApp.close();
-      }
-    });
+  // رفتن به صفحه داخلی
+  window.goInnerPage = () => {
+    pageDepth++;
+    history.pushState({ depth: pageDepth }, "");
+  };
 
-    // برای صفحات داخلی
-    window.pushInnerState = () => {
-      history.pushState({ root: false }, "", location.href);
-    };
-  }
+  // برگشت واقعی
+  window.addEventListener("popstate", () => {
+    pageDepth = Math.max(0, pageDepth - 1);
+  });
 });
 </script>
     <style>
