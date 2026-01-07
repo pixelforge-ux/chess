@@ -4,40 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>شطرنج حرفه‌ای</title>
-        <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
+<script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
   if (window.Eitaa && Eitaa.WebApp) {
     Eitaa.WebApp.ready();
 
-    if (Eitaa.WebApp.expand) Eitaa.WebApp.expand();
-    if (Eitaa.WebApp.setHeaderColor) Eitaa.WebApp.setHeaderColor('#0a61db');
-    if (Eitaa.WebApp.enableClosingConfirmation) Eitaa.WebApp.enableClosingConfirmation();
-    if (Eitaa.WebApp.disableVerticalSwipes) Eitaa.WebApp.disableVerticalSwipes();
+    Eitaa.WebApp.expand?.();
+    Eitaa.WebApp.setHeaderColor?.('#0a61db');
+    Eitaa.WebApp.enableClosingConfirmation?.();
+    Eitaa.WebApp.disableVerticalSwipes?.();
 
     // فعال‌سازی دکمه بک
     Eitaa.WebApp.BackButton.show();
 
-    // فقط یک state پایه می‌ذاریم
+    // state ریشه
     history.replaceState({ root: true }, "", location.href);
 
     Eitaa.WebApp.BackButton.onClick(() => {
-      // اگر state قبل‌تر هست → برگرد
-      if (history.state && !history.state.root) {
+      const state = history.state;
+
+      if (state && state.root === false) {
         history.back();
       } else {
-        // واقعاً ریشه‌ای → خروج
         Eitaa.WebApp.close();
       }
     });
 
-    // هر وقت رفتی صفحه داخلی، اینو صدا بزن
+    // برای صفحات داخلی
     window.pushInnerState = () => {
-      history.pushState({ inner: true }, "", location.href);
+      history.pushState({ root: false }, "", location.href);
     };
   }
 });
-</script><style>
+</script>
+    <style>
 @font-face { 
   font-family: "Vazir";
   /* Add other properties here, as needed. For example: */
