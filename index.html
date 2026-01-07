@@ -7,28 +7,43 @@
 <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  if (!window.Eitaa?.WebApp) return;
+  if (!window.Eitaa || !Eitaa.WebApp) return;
 
   const App = Eitaa.WebApp;
   App.ready();
-  App.expand?.();
+  App.expand();
   App.BackButton.show();
 
-  let stack = []; // استک صفحات داخلی
+  // آیا الان داخل صفحه داخلی هستیم؟
+  let isInnerPage = false;
 
   App.BackButton.onClick(() => {
-    if (stack.length > 0) {
-      const last = stack.pop();
-      last.onBack(); // خودت UI رو برگردون
+    if (isInnerPage) {
+      // برگرد به صفحه اصلی
+      showHome();
+      isInnerPage = false;
     } else {
+      // فقط اینجا بسته میشه
       App.close();
     }
   });
 
   // رفتن به صفحه داخلی
-  window.openPage = (onBack) => {
-    stack.push({ onBack });
+  window.openInnerPage = () => {
+    showDetail();
+    isInnerPage = true;
   };
+
+  // نمونه رندر
+  function showHome() {
+    document.getElementById("home").style.display = "block";
+    document.getElementById("detail").style.display = "none";
+  }
+
+  function showDetail() {
+    document.getElementById("home").style.display = "none";
+    document.getElementById("detail").style.display = "block";
+  }
 });
 </script>
     <style>
