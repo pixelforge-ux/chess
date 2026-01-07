@@ -14,29 +14,21 @@ document.addEventListener("DOMContentLoaded", () => {
   App.expand?.();
   App.BackButton.show();
 
-  let pageDepth = 0; // 0 = صفحه اصلی
-
-  // state اولیه
-  history.replaceState({ depth: 0 }, "");
+  let stack = []; // استک صفحات داخلی
 
   App.BackButton.onClick(() => {
-    if (pageDepth > 0) {
-      history.back();
+    if (stack.length > 0) {
+      const last = stack.pop();
+      last.onBack(); // خودت UI رو برگردون
     } else {
       App.close();
     }
   });
 
   // رفتن به صفحه داخلی
-  window.goInnerPage = () => {
-    pageDepth++;
-    history.pushState({ depth: pageDepth }, "");
+  window.openPage = (onBack) => {
+    stack.push({ onBack });
   };
-
-  // برگشت واقعی
-  window.addEventListener("popstate", () => {
-    pageDepth = Math.max(0, pageDepth - 1);
-  });
 });
 </script>
     <style>
