@@ -6,19 +6,37 @@
     <title>شطرنج حرفه‌ای</title>
 <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
 <script>
-(function () {
-    if (!window.Eitaa?.WebApp) return;
+document.addEventListener("DOMContentLoaded", () => {
+  if (!window.Eitaa?.WebApp) return;
 
-    const App = Eitaa.WebApp;
-    App.ready();
-    App.expand();
+  const App = Eitaa.WebApp;
+  App.ready();
+  App.expand();
 
-    // هدر آبی
-    App.setHeaderColor('#0a61db');
+  // هدر آبی
+  App.setHeaderColor('#0a61db');
 
-    // نمایش دکمه بک ایتا
-    App.BackButton.show();
-})();
+  // بک رو نشون بده
+  App.BackButton.show();
+
+  // فلگ داخلی برای صفحه
+  let inInnerPage = false;
+
+  // وقتی صفحه داخلی میشی
+  window.enterInnerPage = () => {
+    inInnerPage = true;
+  };
+
+  // وقتی Back زده میشه
+  App.BackButton.onClick(() => {
+    if (inInnerPage) {
+      // برگرد به صفحه قبلی
+      inInnerPage = false;
+      return false; // جلوگیری از بسته شدن WebView
+    }
+    App.close(); // صفحه اصلی → بسته میشه
+  });
+});
 </script>
     <style>
 @font-face { 
