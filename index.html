@@ -7,16 +7,12 @@
 <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
 <script>
 (function () {
-    if (!window.Eitaa || !Eitaa.WebApp) return;
+    if (!window.Eitaa?.WebApp) return;
 
     const App = Eitaa.WebApp;
     App.ready();
     App.expand();
 
-    /**
-     * کنترل دکمه بک ایتا
-     * @param {boolean} show
-     */
     window.updateEitaaBackButton = function (show) {
         try {
             if (App.BackButton) {
@@ -25,27 +21,23 @@
         } catch (e) {}
     };
 
-    /**
-     * رندر صفحات (نمونه)
-     */
-    window.showHome = function () {
-        document.getElementById("home").style.display = "block";
-        document.getElementById("detail").style.display = "none";
+    // حالت اولیه: منو
+    updateEitaaBackButton(false);
 
-        // صفحه ریشه → بک مخفی
-        updateEitaaBackButton(false);
-    };
+    /*
+      👇👇👇
+      اینا رو دقیق جایی صدا بزن که بازی شروع/تموم میشه
+    */
 
-    window.showDetail = function () {
-        document.getElementById("home").style.display = "none";
-        document.getElementById("detail").style.display = "block";
-
-        // صفحه داخلی → بک نمایان
+    // وقتی بازی شروع میشه
+    window.onGameStart = function () {
         updateEitaaBackButton(true);
     };
 
-    // صفحه اولیه
-    document.addEventListener("DOMContentLoaded", showHome);
+    // وقتی بازی تموم میشه یا برمی‌گردی به منو
+    window.onGameExit = function () {
+        updateEitaaBackButton(false);
+    };
 })();
 </script>
     <style>
