@@ -6,45 +6,47 @@
     <title>شطرنج حرفه‌ای</title>
 <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  if (!window.Eitaa?.WebApp) return;
+(function () {
+    if (!window.Eitaa || !Eitaa.WebApp) return;
 
-  const App = Eitaa.WebApp;
-  App.ready();
-  App.expand();
-  App.BackButton.show();
+    const App = Eitaa.WebApp;
+    App.ready();
+    App.expand();
 
-  let isInner = false;
+    /**
+     * کنترل دکمه بک ایتا
+     * @param {boolean} show
+     */
+    window.updateEitaaBackButton = function (show) {
+        try {
+            if (App.BackButton) {
+                show ? App.BackButton.show() : App.BackButton.hide();
+            }
+        } catch (e) {}
+    };
 
-  App.BackButton.onClick(() => {
-    if (isInner) {
-      // برگشت داخلی
-      showHome();
-      isInner = false;
+    /**
+     * رندر صفحات (نمونه)
+     */
+    window.showHome = function () {
+        document.getElementById("home").style.display = "block";
+        document.getElementById("detail").style.display = "none";
 
-      // ⛔️ خیلی مهم: جلوگیری از بستن WebView
-      return false;
-    }
+        // صفحه ریشه → بک مخفی
+        updateEitaaBackButton(false);
+    };
 
-    // فقط اینجا اجازه خروج
-    App.close();
-  });
+    window.showDetail = function () {
+        document.getElementById("home").style.display = "none";
+        document.getElementById("detail").style.display = "block";
 
-  window.goInner = () => {
-    isInner = true;
-    showDetail();
-  };
+        // صفحه داخلی → بک نمایان
+        updateEitaaBackButton(true);
+    };
 
-  function showHome() {
-    document.getElementById("home").style.display = "block";
-    document.getElementById("detail").style.display = "none";
-  }
-
-  function showDetail() {
-    document.getElementById("home").style.display = "none";
-    document.getElementById("detail").style.display = "block";
-  }
-});
+    // صفحه اولیه
+    document.addEventListener("DOMContentLoaded", showHome);
+})();
 </script>
     <style>
 @font-face { 
