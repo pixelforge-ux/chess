@@ -5,12 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>شطرنج حرفه‌ای</title>
     <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
-<script>
-      window.Eitaa.WebApp.ready();
-      window.Eitaa.WebApp.expand();
-
-      window.Eitaa.WebApp.disableVerticalSwipes();
-</script>
     <script type="importmap">
     {
         "imports": {
@@ -232,6 +226,32 @@
         .btn-secondary {
             background: linear-gradient(135deg, #444 0%, #222 100%);
             border-bottom-color: #111;
+        }
+
+        /* Close button for main screen */
+        .close-app-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+            transition: all 0.2s;
+        }
+
+        .close-app-btn:active {
+            transform: scale(0.9);
+            background: rgba(255, 0, 0, 0.4);
         }
 
         /* Back button: support both fixed global back and inline back inside screens */
@@ -817,10 +837,7 @@
     <!-- WebView Screen -->
     <div id="webview-screen" class="screen">
         <div class="webview-header">
-            <button class="back-btn" onclick="ui.showScreen('menu-screen')" style="margin: 0;">
-                <span>←</span> بازگشت به بازی
-            </button>
-            <div style="flex: 1; text-align: center; font-weight: bold; font-size: 0.9rem; color: #999;">ثبت تبلیغات</div>
+            <div style="flex: 1; text-align: center; font-weight: bold; font-size: 1rem; color: #fff;">ثبت تبلیغات</div>
         </div>
         <div id="webview-container">
             <div id="webview-loader" class="loader-container">
@@ -1243,22 +1260,22 @@ window.game = new Game();
 
 // Eitaa SDK Integration
 let pageStack = [];
-if (window.Eitaa?.WebApp) {
-    const App = Eitaa.WebApp;
+const App = window.Eitaa?.WebApp;
+
+if (App) {
     App.ready();
     App.expand();
     App.setHeaderColor('#0a61db');
-    App.BackButton.show();
-
+    
+    // The BackButton logic: if stack exists, pop and go menu. 
+    // If we're on menu, the button is hidden so the system Close (X) appears naturally.
     App.BackButton.onClick(() => {
         if (pageStack.length > 0) {
             pageStack.pop();
-            // Using a direct call to the original screen showing logic to avoid stack loops
-            const screens = document.querySelectorAll('.screen');
-            screens.forEach(s => s.classList.remove('active'));
-            document.getElementById('menu-screen').classList.add('active');
-            document.getElementById('game-over-modal').style.display = 'none';
+            ui.showScreen('menu-screen');
         } else {
+            // This part usually isn't reached if BackButton is hidden on menu,
+            // but provided as a fallback.
             App.close();
         }
     });
@@ -1292,11 +1309,15 @@ function pushScreenState(id) {
 // When showing screens, push state so back goes to previous screen instead of exiting
 const originalShowScreen = UI.prototype.showScreen;
 UI.prototype.showScreen = function(id) {
-    // Update Eitaa stack
-    if (id !== 'menu-screen') {
-        if (pageStack.length === 0) pageStack.push(true);
-    } else {
-        pageStack = [];
+    // Update Eitaa SDK BackButton visibility based on current page
+    if (App) {
+        if (id === 'menu-screen') {
+            pageStack = [];
+            App.BackButton.hide(); // Hiding BackButton shows the native 'X' (Close) on main page
+        } else {
+            if (pageStack.length === 0) pageStack.push(id);
+            App.BackButton.show(); // Show Back arrow on internal pages
+        }
     }
     
     originalShowScreen.call(this, id);
