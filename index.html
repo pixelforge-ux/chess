@@ -16,25 +16,28 @@ document.addEventListener("DOMContentLoaded", () => {
   // هدر آبی
   App.setHeaderColor('#0a61db');
 
-  // بک رو نشون بده
+  // مدیریت بک
+  let pageStack = []; // stack داخلی برای صفحات
+
   App.BackButton.show();
 
-  // فلگ داخلی برای صفحه
-  let inInnerPage = false;
-
-  // وقتی صفحه داخلی میشی
-  window.enterInnerPage = () => {
-    inInnerPage = true;
+  // هر وقت وارد یک صفحه داخلی می‌شی، اینو صدا بزن
+  window.pushPage = () => {
+    pageStack.push(true);
+    App.BackButton.show();
   };
 
   // وقتی Back زده میشه
   App.BackButton.onClick(() => {
-    if (inInnerPage) {
-      // برگرد به صفحه قبلی
-      inInnerPage = false;
+    if (pageStack.length > 0) {
+      pageStack.pop(); // برگرد به صفحه قبلی
+      if (pageStack.length === 0) {
+        App.BackButton.show(); // اگر رسیدیم صفحه اصلی
+      }
       return false; // جلوگیری از بسته شدن WebView
+    } else {
+      App.close(); // صفحه اصلی → بسته میشه
     }
-    App.close(); // صفحه اصلی → بسته میشه
   });
 });
 </script>
