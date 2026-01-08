@@ -13,31 +13,8 @@
     App.ready();
     App.expand();
 
-    window.updateEitaaBackButton = function (show) {
-        try {
-            if (App.BackButton) {
-                show ? App.BackButton.show() : App.BackButton.hide();
-            }
-        } catch (e) {}
-    };
-
-    // حالت اولیه: منو
-    updateEitaaBackButton(false);
-
-    /*
-      👇👇👇
-      اینا رو دقیق جایی صدا بزن که بازی شروع/تموم میشه
-    */
-
-    // وقتی بازی شروع میشه
-    window.onGameStart = function () {
-        updateEitaaBackButton(true);
-    };
-
-    // وقتی بازی تموم میشه یا برمی‌گردی به منو
-    window.onGameExit = function () {
-        updateEitaaBackButton(false);
-    };
+    // تغییر رنگ هدر به آبی
+    App.setHeaderColor('#0a61db');
 })();
 </script>
     <style>
